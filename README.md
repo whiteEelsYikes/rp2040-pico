@@ -2,6 +2,12 @@
 
 树莓派 Pi Pico 开发板学习记录与相关demo代码资料
 
+> 阿里云盘下载地址：
+>
+> * [rp2040-pico.exe](https://www.alipan.com/s/mFsYV5NsSVX)
+>
+> .zip 压缩包发不出来，GitHub提示文件太大，阿里云盘不让分享，摆烂。
+
 ## 依赖
 
 * PICO SDK  ==  2.1.0
