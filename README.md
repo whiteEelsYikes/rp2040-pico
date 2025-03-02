@@ -8,7 +8,10 @@
 
 > ！：
 >
-> * LVGL和相关库基本上都是直接直接上源码，没有用子仓库方式关联，已经很简单了。
+> * 记得初始化子仓库
+>   ```sh
+>   git submodule update --init --recursive
+>   ```
 > * 我使用的是VSCode的[Raspberry Pi Pico](https://marketplace.visualstudio.com/items?itemName=raspberry-pi.raspberry-pi-pico)插件对环境进行管理和配置，pico SDK应该在home/下，自己去看文档
 >
 > vscode的 .vscode/ 项目配置相关的文件目录我也一起上传了，build/目录自己编译去
