@@ -1,0 +1,45 @@
+cmake_minimum_required( VERSION 3.13 )
+
+set( CMAKE_C_STANDARD 11 )
+set( CMAKE_CXX_STANDARD 17 )
+
+set(PICO_BOARD "pico_w")
+
+#Include Pico-SDK initialization file, based on <PICO_SDK_PATH>/external/pico_sdk_import.cmake :
+if (DEFINED ENV{PICO_SDK_PATH} AND (NOT PICO_SDK_PATH))
+    set(PICO_SDK_PATH $ENV{PICO_SDK_PATH})
+    message("Using PICO_SDK_PATH from environment ('${PICO_SDK_PATH}')")
+endif ()
+set(PICO_SDK_PATH "${PICO_SDK_PATH}" CACHE PATH "Path to the Raspberry Pi Pico SDK")
+get_filename_component(PICO_SDK_PATH "${PICO_SDK_PATH}" REALPATH BASE_DIR "${CMAKE_BINARY_DIR}")
+if (NOT EXISTS ${PICO_SDK_PATH})
+    message(FATAL_ERROR "Directory '${PICO_SDK_PATH}' not found")
+endif ()
+set(PICO_SDK_INIT_CMAKE_FILE ${PICO_SDK_PATH}/pico_sdk_init.cmake)
+if (NOT EXISTS ${PICO_SDK_INIT_CMAKE_FILE})
+    message(FATAL_ERROR "Directory '${PICO_SDK_PATH}' does not appear to contain the Raspberry Pi Pico SDK")
+endif ()
+set(PICO_SDK_PATH ${PICO_SDK_PATH} CACHE PATH "Path to the Raspberry Pi Pico SDK" FORCE)
+include(${PICO_SDK_INIT_CMAKE_FILE})
+
+
+project( SquareLine_Project C CXX ASM )
+pico_sdk_init()
+
+set(DRIVER_SOURCE_DIR "./driver-libraries" )
+include_directories( ${PROJECT_SOURCE_DIR} ${DRIVER_SOURCE_DIR} ${DRIVER_SOURCE_DIR}/TFT_eSPI ${DRIVER_SOURCE_DIR}/Arduino )
+
+set (ARDUINO_SOURCE_DIR "${DRIVER_SOURCE_DIR}/Arduino")
+FILE(GLOB_RECURSE Arduino_Sources ${ARDUINO_SOURCE_DIR}/SPI.cpp ${ARDUINO_SOURCE_DIR}/delay.cpp ${ARDUINO_SOURCE_DIR}/rpipicow/picow_init.cpp
+                                  ${ARDUINO_SOURCE_DIR}/rpipicow/picow_digital.cpp ${ARDUINO_SOURCE_DIR}/wiring_private.cpp ${ARDUINO_SOURCE_DIR}/wiring_digital.cpp
+                                  ${ARDUINO_SOURCE_DIR}/wiring_analog.cpp ${ARDUINO_SOURCE_DIR}/Print.cpp )
+FILE(GLOB_RECURSE TFT_eSPI_Sources CONFIGURE_DEPENDS ${DRIVER_SOURCE_DIR}/TFT_eSPI/TFT_eSPI.cpp )
+FILE(GLOB_RECURSE LVGL_Sources CONFIGURE_DEPENDS lvgl/*.c)
+FILE(GLOB_RECURSE UI_Sources CONFIGURE_DEPENDS ui/*.c ui/*.cpp)
+
+
+add_executable( ${CMAKE_PROJECT_NAME} main.cpp ${UI_Sources} ${LVGL_Sources} ${TFT_eSPI_Sources} ${Arduino_Sources} )
+pico_add_extra_outputs( ${CMAKE_PROJECT_NAME} )
+
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE pico_stdlib m hardware_spi hardware_dma hardware_pio pico_cyw43_arch_none hardware_adc hardware_pwm )
+
